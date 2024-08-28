@@ -1,26 +1,13 @@
 #!/bin/bash
 
-# a temporary file to store the results
-temp_file=$(mktemp)
+man_ls_count=$(man ls | wc -l)
+man_man_count=$(man man | wc -l)
+man_find_count=$(man find | wc -l)
 
-# count the number of lines
-count_man_lines() {
-    local command=$1
-    local line_count=$(man $command | wc -l)
-    echo "$command,$line_count" >> $temp_file
-}
+echo "ls,$man_ls_count" > countline.txt
+echo "man,$man_man_count" >> countline.txt
+echo "find,$man_find_count" >> countline.txt
 
-# for each man page
-count_man_lines "man"
-count_man_lines "ls"
-count_man_lines "find"
+sort -t, -k2 -n -r countline.txt
 
-# sort
-sort -t, -k2 -g -r $temp_file | while IFS=, read -r command line_count
-do
-    echo "$command has $line_count lines in its man page."
-done
-
-# remove
-rm -f $temp_file
-
+rm countline.txt
